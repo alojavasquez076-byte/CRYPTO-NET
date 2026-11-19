@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CRYPTO-NET • AI Token &amp; Asset Intelligence</title>
+
+  <!-- Google Fonts: Space Grotesk (Display), Inter (Body), JetBrains Mono (Market Metrics) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            obsidian: '#07090F',
+            surface: '#0F1422',
+            surfaceAlt: '#151C2E',
+            gold: {
+              300: '#FCD34D',
+              400: '#FBBF24',
+              500: '#F59E0B',
+              600: '#D97706',
+            },
+            indigoCyber: {
+              400: '#818CF8',
+              500: '#6366F1',
+              600: '#4F46E5',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- TensorFlow.js & Google Teachable Machine Image Library -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.21.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8.5/dist/teachablemachine-image.min.js"></script>
+
+  <style>
+    /* Dark-luxury obsidian background with warm gold and cyber-indigo ambient gradients */
+    body {
+      background-color: #07090F;
+      color: #F8FAFC;
+      background-image:
+        radial-gradient(circle at 14% 10%, rgba(245, 158, 11, 0.11), transparent 36%),
+        radial-gradient(circle at 86% 14%, rgba(99, 102, 241, 0.14), transparent 40%),
+        radial-gradient(circle at 50% 88%, rgba(129, 140, 248, 0.06), transparent 45%);
+    }
+
+    /* Glassmorphic card surfaces */
+    .luxury-card {
+      background: rgba(15, 20, 34, 0.82);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /* Active match glow states */
+    .glow-gold {
+      box-shadow: 0 0 40px -8px rgba(245, 158, 11, 0.34);
+      border-color: rgba(251, 191, 36, 0.55) !important;
+    }
+
+    .glow-indigo {
+      box-shadow: 0 0 40px -8px rgba(99, 102, 241, 0.36);
+      border-color: rgba(129, 140, 248, 0.58) !important;
+    }
+
+    /* Subtle scanner laser animation */
+    @keyframes laserSweep {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(420%); }
+    }
+
+    .laser-sweep {
+      animation: laserSweep 2.6s linear infinite;
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-amber-500/30 selection:text-amber-200 overflow-x-hidden">
+
+  <!-- =====================================================================
+       TOP REAL-TIME MARKET TICKER BAR
+       ===================================================================== -->
+  <div class="bg-obsidian/95 border-b border-white/10 text-[11px] sm:text-xs font-mono py-2 px-4">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 text-slate-300">
+      <div class="flex flex-wrap items-center gap-4 sm:gap-6">
+        <span class="inline-flex items-center gap-1.5 text-emerald-400 font-semibold">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          REAL-TIME FEED
+        </span>
+        <span>
+          <strong class="text-amber-400">GOLD TOKEN (PAXG):</strong>
+          <span id="ticker-gold-usd">$3,717.44</span>
+          <span class="text-slate-400">(<span id="ticker-gold-php">₱236,838.10</span>)</span>
+        </span>
+        <span class="hidden sm:inline text-white/20">|</span>
+        <span>
+          <strong class="text-indigo-400">NFT TOKEN (AINFT):</strong>
+          <span id="ticker-nft-usd">$0.000000193</span>
+          <span class="text-slate-400">(<span id="ticker-nft-php">₱0.0000123</span>)</span>
+        </span>
+      </div>
+      <div id="ticker-timestamp" class="text-slate-400">Reference Rate: ₱63.71 / USD • Nov 19, 2026</div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       STICKY HEADER & NAVIGATION (Alignment & Unity)
+       ===================================================================== -->
+  <header class="sticky top-0 z-50 luxury-card border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <a href="#" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 via-amber-500 to-indigo-500 p-[1.5px]">
+          <div class="w-full h-full bg-obsidian rounded-[10px] flex items-center justify-center">
+            <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 12l8-4.5M12 12v9M12 12L4 7.5" />
+            </svg>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="font-display font-bold text-base sm:text-lg tracking-tight text-white">
+            CRYPTO<span class="text-amber-400">-NET</span>
+          </span>
+          <span class="hidden lg:inline-block text-[11px] font-mono text-slate-400 border-l border-white/15 pl-2">
+            AI Token &amp; Asset Intelligence
+          </span>
+        </div>
+      </a>
+
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-300">
+        <a href="#live-prices" class="hover:text-amber-400 transition-colors">Live Prices</a>
+        <a href="#scanner" class="hover:text-amber-400 transition-colors">AI Scanner</a>
+        <a href="#comparison" class="hover:text-indigo-400 transition-colors">Comparison</a>
+        <a href="#community-significance" class="hover:text-emerald-400 transition-colors">Community</a>
+        <a href="#design-principles" class="hover:text-amber-400 transition-colors">Design</a>
+      </nav>
+
+      <a href="#scanner" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-gradient-to-r from-amber-400 to-amber-500 text-obsidian hover:from-amber-300 hover:to-amber-400 transition-all shadow-lg shadow-amber-500/20">
+        <span>Scan Token</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- =====================================================================
+       HERO & REAL-TIME TOKEN PRICES TODAY (#live-prices)
+       ===================================================================== -->
+  <section id="live-prices" class="pt-10 pb-14 sm:pt-14 sm:pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <!-- Hero Block (Visual Hierarchy) -->
+    <div class="text-center max-w-3xl mx-auto mb-12">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-slate-300 mb-5">
+        <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+        <span>CRYPTO-NET • Google Teachable Machine (_okYdyBMt) &amp; Live Token Pricing</span>
+      </div>
+      <h1 class="font-display text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.12] mb-5">
+        Identify <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500">Gold Tokens</span> &amp;
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-indigo-300 to-cyan-300">NFT Tokens</span> in Real Time
+      </h1>
+      <p class="text-slate-400 text-base sm:text-lg leading-relaxed">
+        Check today’s live market prices for Gold Tokens and NFT Tokens, scan token pictures with AI, and discover how both assets create real value for communities.
+      </p>
+    </div>
+
+    <!-- Live Market Prices Header + Refresh Button -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 px-1">
+      <div class="flex items-center gap-2.5">
+        <span class="relative flex h-2.5 w-2.5">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+        </span>
+        <h2 class="font-display text-base sm:text-lg font-bold uppercase tracking-wider text-white">
+          Real-Time Token Prices Today (USD &amp; PHP)
+        </h2>
+      </div>
+      <div class="flex items-center gap-3 text-xs text-slate-400 font-mono">
+        <span id="market-status-text">Syncing CoinGecko oracle...</span>
+        <button id="refresh-prices-btn" onclick="fetchLiveMarketPrices()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 transition-all cursor-pointer">
+          <svg id="refresh-icon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          Refresh Live Prices
+        </button>
+      </div>
+    </div>
+
+    <!-- Dual Price Display Cards (Balance & Contrast) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- GOLD TOKEN REAL-TIME PRICE CARD -->
+      <div class="luxury-card rounded-2xl p-6 sm:p-7 border border-amber-500/35 relative overflow-hidden hover:border-amber-400/60 transition-all">
+        <div class="absolute -right-10 -top-10 w-44 h-44 rounded-full bg-amber-500/10 blur-2xl pointer-events-none"></div>
+
+        <div class="flex items-start justify-between gap-3 mb-5">
+          <div class="flex items-center gap-3.5">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-300 via-amber-400 to-amber-600 flex items-center justify-center text-obsidian font-display font-bold text-xl shadow-lg shadow-amber-500/25">
+              Au
+            </div>
+            <div>
+              <div class="flex flex-wrap items-center gap-2">
+                <h3 class="font-display font-bold text-lg sm:text-xl text-white">Gold Token (PAXG)</h3>
+                <span class="text-[11px] font-mono px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-300 border border-amber-500/30">24K GOLD RWA</span>
+              </div>
+              <p class="text-xs text-slate-400 mt-0.5">1 PAXG = 1 Fine Troy Ounce Physical Bullion</p>
+            </div>
+          </div>
+          <span id="gold-change-badge" class="font-mono text-xs font-semibold px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+            +0.92% (24h)
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-white/10">
+          <div>
+            <span class="text-[11px] font-mono uppercase tracking-wider text-slate-400 block mb-1">Gold Token Price Today</span>
+            <div id="gold-price-usd" class="font-mono text-2xl sm:text-3xl font-bold text-amber-400">$3,717.44</div>
+            <span id="gold-price-php" class="font-mono text-xs sm:text-sm text-amber-200/90 mt-1 block">₱236,838.10 PHP</span>
+          </div>
+          <div class="bg-obsidian/75 rounded-xl p-3.5 border border-white/5 flex flex-col justify-center">
+            <span class="text-[11px] font-mono uppercase tracking-wider text-slate-400 block mb-1">Reserve Backing</span>
+            <div class="font-mono text-sm font-semibold text-slate-200">1:1 Physical Gold</div>
+            <span class="text-[11px] text-amber-300/80 mt-0.5">LBMA Vault Custodied</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- NFT TOKEN REAL-TIME PRICE CARD -->
+      <div class="luxury-card rounded-2xl p-6 sm:p-7 border border-indigo-500/35 relative overflow-hidden hover:border-indigo-400/60 transition-all">
+        <div class="absolute -right-10 -top-10 w-44 h-44 rounded-full bg-indigo-500/15 blur-2xl pointer-events-none"></div>
+
+        <div class="flex items-start justify-between gap-3 mb-5">
+          <div class="flex items-center gap-3.5">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-cyan-500 flex items-center justify-center text-white font-display font-bold text-base shadow-lg shadow-indigo-500/25">
+              NFT
+            </div>
+            <div>
+              <div class="flex flex-wrap items-center gap-2">
+                <h3 class="font-display font-bold text-lg sm:text-xl text-white">NFT Token (AINFT)</h3>
+                <span class="text-[11px] font-mono px-2 py-0.5 rounded-md bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">WEB3 ASSET</span>
+              </div>
+              <p class="text-xs text-slate-400 mt-0.5">NFT Ecosystem Token &amp; Digital Collectible Benchmark</p>
+            </div>
+          </div>
+          <span id="nft-change-badge" class="font-mono text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
+            +2.18% (24h)
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-white/10">
+          <div>
+            <span class="text-[11px] font-mono uppercase tracking-wider text-slate-400 block mb-1">NFT Token Price Today</span>
+            <div id="nft-price-usd" class="font-mono text-xl sm:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-cyan-300">$0.000000193</div>
+            <span id="nft-price-php" class="font-mono text-xs sm:text-sm text-indigo-200/90 mt-1 block">₱0.0000123 PHP</span>
+          </div>
+          <div class="bg-obsidian/75 rounded-xl p-3.5 border border-white/5 flex flex-col justify-center">
+            <span class="text-[11px] font-mono uppercase tracking-wider text-slate-400 block mb-1">NFT Collection Floor Avg</span>
+            <div id="nft-floor-usd" class="font-mono text-sm font-semibold text-slate-200">$1,115.86</div>
+            <span id="nft-floor-php" class="text-[11px] font-mono text-indigo-300/80 mt-0.5">≈ ₱71,091.44 PHP</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       INTERACTIVE TEACHABLE MACHINE SCANNER (#scanner)
+       ===================================================================== -->
+  <section id="scanner" class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div>
+        <span class="text-xs font-mono uppercase tracking-widest text-amber-400 block mb-2">Teachable Machine AI Vision</span>
+        <h2 class="font-display text-2xl sm:text-4xl font-bold text-white">Scan NFT Token or Gold Token Picture</h2>
+      </div>
+      <p class="text-sm text-slate-400 max-w-xl">
+        Use your live webcam or upload a token picture to classify the image with model <span class="font-mono text-slate-300">_okYdyBMt</span> and view its real-time USD &amp; PHP price immediately.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-7 items-stretch">
+      <!-- LEFT COLUMN: Webcam & Image Upload Viewport -->
+      <div class="lg:col-span-6 luxury-card rounded-3xl p-6 flex flex-col justify-between">
+        <div>
+          <!-- Mode Tabs -->
+          <div class="flex items-center gap-2 p-1.5 rounded-2xl bg-obsidian border border-white/10 mb-5">
+            <button id="tab-webcam" onclick="switchScannerMode('webcam')" class="flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-white/10 text-white shadow cursor-pointer">
+              Live Webcam
+            </button>
+            <button id="tab-upload" onclick="switchScannerMode('upload')" class="flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold transition-all text-slate-400 hover:text-white cursor-pointer">
+              Upload Token Picture
+            </button>
+          </div>
+
+          <!-- Scan Viewport -->
+          <div id="drop-zone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)" class="relative w-full aspect-square max-h-[380px] mx-auto rounded-2xl bg-obsidian border-2 border-dashed border-white/15 overflow-hidden flex items-center justify-center transition-colors">
+            <div id="scanner-placeholder" class="text-center p-6 max-w-xs">
+              <div class="w-14 h-14 mx-auto mb-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-amber-400">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              <p class="text-sm font-semibold text-white mb-1">Ready to Scan Token Image</p>
+              <p class="text-xs text-slate-400">Start the AI camera or upload/drag a Gold Token or NFT Token picture to check its live market price.</p>
+            </div>
+
+            <div id="webcam-container" class="hidden w-full h-full flex items-center justify-center [&>canvas]:w-full [&>canvas]:h-full [&>canvas]:object-cover"></div>
+            <img id="uploaded-preview" alt="Uploaded Token Picture Preview" class="hidden w-full h-full object-contain bg-obsidian p-2" />
+
+            <!-- Scanner Laser Overlay -->
+            <div id="scan-overlay" class="hidden pointer-events-none absolute inset-0 border-2 border-amber-400/60 rounded-2xl">
+              <div class="absolute top-3 left-3 w-5 h-5 border-t-2 border-l-2 border-amber-400"></div>
+              <div class="absolute top-3 right-3 w-5 h-5 border-t-2 border-r-2 border-amber-400"></div>
+              <div class="absolute bottom-3 left-3 w-5 h-5 border-b-2 border-l-2 border-amber-400"></div>
+              <div class="absolute bottom-3 right-3 w-5 h-5 border-b-2 border-r-2 border-amber-400"></div>
+              <div class="w-full h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent opacity-80 laser-sweep"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scanner Action Buttons -->
+        <div class="mt-5 space-y-3">
+          <div id="webcam-controls" class="flex flex-wrap gap-3">
+            <button id="start-cam-btn" onclick="startWebcamScanner()" class="flex-1 py-3 px-5 rounded-xl font-semibold text-sm bg-gradient-to-r from-amber-400 to-amber-500 text-obsidian hover:from-amber-300 hover:to-amber-400 transition-all shadow-lg shadow-amber-500/20 cursor-pointer">
+              Start AI Camera
+            </button>
+            <button id="stop-cam-btn" onclick="stopWebcamScanner()" class="hidden py-3 px-5 rounded-xl font-semibold text-sm bg-rose-500/20 text-rose-300 border border-rose-500/30 hover:bg-rose-500/30 transition-all cursor-pointer">
+              Stop Camera
+            </button>
+          </div>
+
+          <div id="upload-controls" class="hidden">
+            <label for="token-image-input" class="flex items-center justify-center gap-2 w-full py-3 px-5 rounded-xl font-semibold text-sm bg-gradient-to-r from-indigo-600 to-indigo-500 text-white hover:from-indigo-500 hover:to-indigo-400 transition-all shadow-lg shadow-indigo-500/20 cursor-pointer">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+              </svg>
+              Upload Token Picture (JPG, PNG, WEBP)
+            </label>
+            <input id="token-image-input" type="file" accept="image/jpeg,image/png,image/webp,image/*" onchange="handleImageUpload(event)" class="hidden" />
+          </div>
+
+          <div class="flex items-center justify-between text-xs text-slate-400 pt-1">
+            <span id="model-status">Model: <span class="text-slate-300 font-mono">_okYdyBMt</span> (Ready on Demand)</span>
+            <a href="https://teachablemachine.withgoogle.com/models/_okYdyBMt/" target="_blank" rel="noopener noreferrer" class="text-amber-400 hover:underline">Teachable Machine ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: Scan Result & Instant Real-Time Valuation -->
+      <div id="output-panel" class="lg:col-span-6 luxury-card rounded-3xl p-6 sm:p-7 flex flex-col justify-between transition-all duration-300">
+        <div>
+          <div class="flex items-center justify-between mb-5">
+            <span class="text-xs font-mono uppercase tracking-wider text-slate-400">Scan Classification &amp; Real-Time Price</span>
+            <span id="detection-badge" class="text-xs font-mono px-2.5 py-1 rounded-full bg-white/5 text-slate-400 border border-white/10">
+              Awaiting Scan
+            </span>
+          </div>
+
+          <!-- Detected Token Valuation Card -->
+          <div id="detected-valuation-card" class="rounded-2xl bg-obsidian/90 border border-white/10 p-5 sm:p-6 mb-6 transition-all">
+            <div class="flex items-center gap-3.5 mb-3">
+              <div id="detected-icon" class="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-lg font-bold text-slate-300">
+                ?
+              </div>
+              <div>
+                <h3 id="detected-title" class="font-display text-xl sm:text-2xl font-bold text-white">No Token Picture Scanned</h3>
+                <p id="detected-subtitle" class="text-xs text-slate-400">Scan a Gold Token or NFT Token picture to display its real-time USD &amp; PHP price.</p>
+              </div>
+            </div>
+
+            <!-- Revealed upon scanning Gold Token or NFT Token -->
+            <div id="detected-price-box" class="hidden mt-4 pt-4 border-t border-white/10 space-y-3">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <span class="text-[11px] font-mono uppercase tracking-wider text-slate-400 block">Real-Time Token Price</span>
+                  <div id="scanned-live-usd" class="font-mono text-2xl sm:text-3xl font-bold text-amber-400 mt-0.5">$0.00</div>
+                  <span id="scanned-live-php" class="font-mono text-xs sm:text-sm text-slate-300">₱0.00 PHP</span>
+                </div>
+                <div class="bg-white/[0.03] rounded-xl p-3 border border-white/10">
+                  <span class="text-[11px] font-mono uppercase tracking-wider text-slate-400 block">24h Market Move</span>
+                  <div id="scanned-live-change" class="font-mono text-base font-bold text-emerald-400 mt-0.5">+0.00%</div>
+                  <span id="scanned-asset-benchmark" class="text-[11px] font-mono text-slate-300 block mt-0.5">Live Oracle</span>
+                </div>
+              </div>
+              <div class="rounded-xl bg-white/[0.03] px-3.5 py-2.5 border border-white/5 text-xs text-slate-300">
+                <strong class="text-white">Asset Summary:</strong>
+                <span id="scanned-asset-summary">Physical 24K gold vault reserve verified 1:1 per token.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Class Probability Confidence Bars -->
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <h4 class="text-xs font-mono uppercase tracking-wider text-slate-400">Model Class Confidence</h4>
+              <span id="loaded-classes-count" class="text-[11px] font-mono text-slate-500">Classes: Dynamic on Load</span>
+            </div>
+            <div id="prediction-bars" class="space-y-3.5">
+              <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/5">
+                <div class="flex justify-between text-xs font-medium mb-1.5">
+                  <span class="text-amber-300">Gold Token Class</span>
+                  <span class="font-mono text-slate-400">0.0%</span>
+                </div>
+                <div class="w-full h-2 rounded-full bg-obsidian overflow-hidden">
+                  <div class="h-full bg-amber-400 rounded-full" style="width: 0%"></div>
+                </div>
+              </div>
+              <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/5">
+                <div class="flex justify-between text-xs font-medium mb-1.5">
+                  <span class="text-indigo-300">NFT Token Class</span>
+                  <span class="font-mono text-slate-400">0.0%</span>
+                </div>
+                <div class="w-full h-2 rounded-full bg-obsidian overflow-hidden">
+                  <div class="h-full bg-gradient-to-r from-indigo-500 to-cyan-400 rounded-full" style="width: 0%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-white/10 text-xs text-slate-400">
+          <p><strong class="text-slate-200">Pricing Disclaimer:</strong> Displayed prices are live market references for informational and educational use. Individual non-fungible NFTs may also carry unique piece-specific valuations based on rarity, provenance, or collector demand.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       GOLD TOKEN VS. NFT TOKEN COMPARISON CARDS (#comparison)
+       ===================================================================== -->
+  <section id="comparison" class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <div class="text-center max-w-2xl mx-auto mb-10">
+      <span class="text-xs font-mono uppercase tracking-widest text-indigo-400 block mb-2">Asset Comparison</span>
+      <h2 class="font-display text-2xl sm:text-4xl font-bold text-white mb-3">Gold Token vs. NFT Token</h2>
+      <p class="text-sm sm:text-base text-slate-400">
+        Understand how commodity-backed Gold Tokens and unique Non-Fungible Tokens differ in structure, fungibility, and real-world utility.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Gold Token Card -->
+      <div class="luxury-card rounded-3xl p-6 sm:p-8 border-t-4 border-t-amber-400">
+        <div class="flex items-center justify-between gap-2 mb-5">
+          <h3 class="font-display text-xl sm:text-2xl font-bold text-amber-400">Gold Token (PAXG)</h3>
+          <span class="text-xs font-mono px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-300">Fungible • RWA</span>
+        </div>
+
+        <dl class="space-y-4 text-sm">
+          <div class="pb-3 border-b border-white/10">
+            <dt class="text-xs font-mono uppercase tracking-wider text-slate-400 mb-1">Underlying Backing</dt>
+            <dd class="text-slate-200">Backed 1:1 by physical, serial-numbered 24K gold bullion held in secure, audited vaults.</dd>
+          </div>
+          <div class="pb-3 border-b border-white/10">
+            <dt class="text-xs font-mono uppercase tracking-wider text-slate-400 mb-1">Fungibility &amp; divisibility</dt>
+            <dd class="text-slate-200"><strong>Fungible:</strong> Every token is interchangeable with another of equal weight and can be traded in fractional amounts.</dd>
+          </div>
+          <div class="pb-3 border-b border-white/10">
+            <dt class="text-xs font-mono uppercase tracking-wider text-slate-400 mb-1">Today’s Reference Price</dt>
+            <dd id="comp-gold-price" class="font-mono font-bold text-amber-400">$3,717.44 USD / ₱236,838.10 PHP (1 troy oz)</dd>
+          </div>
+          <div>
+            <dt class="text-xs font-mono uppercase tracking-wider text-slate-400 mb-1">Primary Role</dt>
+            <dd class="text-slate-200">Value preservation, inflation hedging, and accessible fractional gold ownership.</dd>
+          </div>
+        </dl>
+      </div>
+
+      <!-- NFT Token Card -->
+      <div class="luxury-card rounded-3xl p-6 sm:p-8 border-t-4 border-t-indigo-500">
+        <div class="flex items-center justify-between gap-2 mb-5">
+          <h3 class="font-display text-xl sm:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-cyan-300">NFT Token (AINFT / ERC-721)</h3>
+          <span class="text-xs font-mono px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-300">Non-Fungible • Web3</span>
+        </div>
+
+        <dl class="space-y-4 text-sm">
+          <div class="pb-3 border-b border-white/10">
+            <dt class="text-xs font-mono uppercase tracking-wider text-slate-400 mb-1">Underlying Backing</dt>
+            <dd class="text-slate-200">Backed by cryptographic proof of uniqueness, creator provenance, digital media metadata, or community utility.</dd>
+          </div>
+          <div class="pb-3 border-b border-white/10">
+            <dt class="text-xs font-mono uppercase tracking-wider text-slate-400 mb-1">Fungibility &amp; Uniqueness</dt>
+            <dd class="text-slate-200"><strong>Non-Fungible:</strong> Each token has a distinct identifier and attributes—no two standard NFTs are identical.</dd>
+          </div>
+          <div class="pb-3 border-b border-white/10">
+            <dt class="text-xs font-mono uppercase tracking-wider text-slate-400 mb-1">Today’s Reference Price</dt>
+            <dd id="comp-nft-price" class="font-mono font-bold text-indigo-300">$0.000000193 USD (AINFT) • ~$1,115.86 Sector Floor</dd>
+          </div>
+          <div>
+            <dt class="text-xs font-mono uppercase tracking-wider text-slate-400 mb-1">Primary Role</dt>
+            <dd class="text-slate-200">Verifiable digital ownership, creator support, event passes, and community collectibles.</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       SIGNIFICANCE TO THE COMMUNITY IN ENGLISH (#community-significance)
+       ===================================================================== -->
+  <section id="community-significance" class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <div class="luxury-card rounded-3xl p-7 sm:p-10 lg:p-12 border border-emerald-500/25 relative overflow-hidden">
+      <div class="absolute -right-16 -bottom-16 w-72 h-72 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none"></div>
+
+      <div class="max-w-3xl mb-10">
+        <span class="text-xs font-mono uppercase tracking-widest text-emerald-400 block mb-2">
+          Community Value &amp; Real-World Impact
+        </span>
+        <h2 class="font-display text-2xl sm:text-4xl font-bold text-white mb-3">
+          Significance to the Community
+        </h2>
+        <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+          Understanding how <strong class="text-amber-400">Gold Tokens</strong> and <strong class="text-indigo-300">NFT Tokens</strong> work empowers everyday citizens, students, small savers, and creators to participate safely and transparently in the modern digital economy.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- How Gold Tokens Help the Community -->
+        <div class="bg-obsidian/85 rounded-2xl p-6 border border-amber-500/25">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center font-display font-bold text-sm">Au</span>
+            <h3 class="font-display font-bold text-lg text-white">How Gold Tokens Help the Community</h3>
+          </div>
+          <ul class="space-y-3 text-sm text-slate-300 leading-relaxed">
+            <li>
+              <strong class="text-amber-300">Fractional Gold Access:</strong> Allows community members and small savers to buy fractions of gold instead of saving up for an entire physical bullion bar.
+            </li>
+            <li>
+              <strong class="text-amber-300">Inflation Hedge &amp; Savings Stability:</strong> Helps households preserve purchasing power over time against currency inflation and market uncertainty.
+            </li>
+            <li>
+              <strong class="text-amber-300">Verifiable Digital Ownership:</strong> Combines traditional gold value with transparent blockchain records and convenient digital transferability.
+            </li>
+          </ul>
+        </div>
+
+        <!-- How NFT Tokens Help the Community -->
+        <div class="bg-obsidian/85 rounded-2xl p-6 border border-indigo-500/25">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="w-9 h-9 rounded-xl bg-indigo-500/15 text-indigo-300 flex items-center justify-center font-display font-bold text-sm">NFT</span>
+            <h3 class="font-display font-bold text-lg text-white">How NFT Tokens Help the Community</h3>
+          </div>
+          <ul class="space-y-3 text-sm text-slate-300 leading-relaxed">
+            <li>
+              <strong class="text-indigo-300">Creator Ownership &amp; Recognition:</strong> Enables independent artists, designers, and musicians to prove authorship and earn directly from their digital works.
+            </li>
+            <li>
+              <strong class="text-indigo-300">Verifiable Authenticity:</strong> Provides tamper-evident provenance on-chain so collectors and buyers can verify genuine digital items and reduce counterfeit confusion.
+            </li>
+            <li>
+              <strong class="text-indigo-300">Community Passes &amp; Transparent Utility:</strong> Supports gated member clubs, digital event tickets, badges, and interactive collectibles with clear on-chain rules.
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Community Scanner & Price Awareness Takeaway -->
+      <div class="mt-6 bg-obsidian/70 rounded-2xl p-5 border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+          <strong class="text-emerald-400">Why CRYPTO-NET Matters Locally:</strong> By pairing instant AI token image recognition with live USD and PHP market prices, CRYPTO-NET helps students, creators, and everyday users learn faster and spot misleading claims before acting.
+        </p>
+        <a href="#scanner" class="shrink-0 inline-flex items-center justify-center px-4 py-2.5 rounded-xl text-xs font-semibold bg-white/10 hover:bg-white/15 text-white border border-white/15 transition-all">
+          Try the Scanner ↑
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       PRINCIPLES OF DESIGN SHOWCASE (#design-principles)
+       ===================================================================== -->
+  <section id="design-principles" class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <div class="mb-10">
+      <span class="text-xs font-mono uppercase tracking-widest text-amber-400 block mb-2">UI &amp; Visual Craft</span>
+      <h2 class="font-display text-2xl sm:text-4xl font-bold text-white mb-3">Principles of Design Applied</h2>
+      <p class="text-sm sm:text-base text-slate-400 max-w-2xl">
+        Every section of CRYPTO-NET is structured around six core design principles to deliver clarity, visual polish, and responsive usability.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div class="luxury-card rounded-2xl p-5 border-l-2 border-l-amber-400">
+        <span class="text-xs font-mono text-amber-400 font-bold">01. CONTRAST</span>
+        <h3 class="font-display font-bold text-white text-base mt-1 mb-2">Dark Obsidian vs. Gold &amp; Indigo</h3>
+        <p class="text-xs sm:text-sm text-slate-400">High-contrast typography and distinct gold vs. cyber-indigo accents make live prices and scan classifications effortless to read.</p>
+      </div>
+
+      <div class="luxury-card rounded-2xl p-5 border-l-2 border-l-indigo-400">
+        <span class="text-xs font-mono text-indigo-400 font-bold">02. HIERARCHY</span>
+        <h3 class="font-display font-bold text-white text-base mt-1 mb-2">Guided Information Flow</h3>
+        <p class="text-xs sm:text-sm text-slate-400">Display titles, bold tabular price figures, and primary action buttons prioritize key metrics before supporting details.</p>
+      </div>
+
+      <div class="luxury-card rounded-2xl p-5 border-l-2 border-l-cyan-400">
+        <span class="text-xs font-mono text-cyan-400 font-bold">03. BALANCE</span>
+        <h3 class="font-display font-bold text-white text-base mt-1 mb-2">Symmetrical Grids &amp; Split Views</h3>
+        <p class="text-xs sm:text-sm text-slate-400">Paired price cards, side-by-side comparison columns, and a balanced 6/6 scanner layout distribute visual weight evenly.</p>
+      </div>
+
+      <div class="luxury-card rounded-2xl p-5 border-l-2 border-l-emerald-400">
+        <span class="text-xs font-mono text-emerald-400 font-bold">04. PROXIMITY</span>
+        <h3 class="font-display font-bold text-white text-base mt-1 mb-2">Related Grouping &amp; Breathing Room</h3>
+        <p class="text-xs sm:text-sm text-slate-400">Scanner controls stay grouped beside the camera lens, while detected USD/PHP prices and confidence bars sit together in one panel.</p>
+      </div>
+
+      <div class="luxury-card rounded-2xl p-5 border-l-2 border-l-amber-400">
+        <span class="text-xs font-mono text-amber-400 font-bold">05. ALIGNMENT</span>
+        <h3 class="font-display font-bold text-white text-base mt-1 mb-2">Consistent Container Axis</h3>
+        <p class="text-xs sm:text-sm text-slate-400">Navigation links, cards, labels, and tabular numeric columns align cleanly across a unified max-w-7xl layout grid.</p>
+      </div>
+
+      <div class="luxury-card rounded-2xl p-5 border-l-2 border-l-indigo-400">
+        <span class="text-xs font-mono text-indigo-400 font-bold">06. UNITY &amp; REPETITION</span>
+        <h3 class="font-display font-bold text-white text-base mt-1 mb-2">Cohesive Visual System</h3>
+        <p class="text-xs sm:text-sm text-slate-400">Consistent rounded corners, glassmorphic surfaces, monospace metrics, and color semantics unify the entire GitHub Pages app.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       FOOTER & DISCLAIMER
+       ===================================================================== -->
+  <footer class="border-t border-white/10 py-8 px-4 sm:px-6 lg:px-8 mt-8 bg-obsidian/85">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400 text-center sm:text-left">
+      <div class="text-slate-300">
+        <strong class="font-display text-white">CRYPTO-NET</strong> • GitHub Pages AI Token &amp; Asset Intelligence • Prices are live market references (non-fungible NFTs may vary per piece).
+      </div>
+      <div class="font-mono text-slate-500">
+        Teachable Machine: _okYdyBMt
+      </div>
+    </div>
+  </footer>
+
+  <!-- =====================================================================
+       JAVASCRIPT: LIVE PRICE ORACLE + TEACHABLE MACHINE SCANNER
+       ===================================================================== -->
+  <script>
+    // Teachable Machine image model endpoint
+    const TM_MODEL_URL = "https://teachablemachine.withgoogle.com/models/_okYdyBMt/";
+
+    // Reference exchange rate & verified market fallback values (Nov 19, 2026)
+    const PHP_PER_USD = 63.71;
+
+    const marketState = {
+      goldUsd: 3717.44,
+      goldPhp: 3717.44 * PHP_PER_USD, // ₱236,838.10
+      goldChange24h: 0.92,
+      nftUsd: 0.000000193,
+      nftPhp: 0.000000193 * PHP_PER_USD, // ~₱0.0000123
+      nftChange24h: 2.18,
+      nftFloorUsd: 1115.86,
+      nftFloorPhp: 1115.86 * PHP_PER_USD, // ~₱71,091.44
+      lastMatchType: null // 'gold' | 'nft' | null
+    };
+
+    let modelInstance = null;
+    let webcamInstance = null;
+    let webcamActive = false;
+    let rafId = null;
+
+    // Format USD cleanly for large and micro-priced tokens
+    function formatUsd(amount) {
+      if (amount >= 1) {
+        return "$" + amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+      return "$" + Number(amount).toFixed(9).replace(/0+$/, "").replace(/\.$/, "");
+    }
+
+    // Format PHP cleanly for large and micro-priced tokens
+    function formatPhp(amount) {
+      if (amount >= 1) {
+        return "₱" + amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " PHP";
+      }
+      return "₱" + Number(amount).toFixed(7).replace(/0+$/, "").replace(/\.$/, "") + " PHP";
+    }
+
+    // Fetch live prices from CoinGecko with graceful fallback to verified reference rates
+    async function fetchLiveMarketPrices() {
+      const statusEl = document.getElementById("market-status-text");
+      const iconEl = document.getElementById("refresh-icon");
+      iconEl.classList.add("animate-spin");
+      statusEl.textContent = "Fetching live market prices...";
+
+      try {
+        const endpoint =
+          "https://api.coingecko.com/api/v3/simple/price?ids=pax-gold,ainft&vs_currencies=usd,php&include_24hr_change=true";
+        const res = await fetch(endpoint);
+        if (!res.ok) throw new Error("Market API unavailable");
+        const json = await res.json();
+
+        if (json["pax-gold"]) {
+          marketState.goldUsd = json["pax-gold"].usd || marketState.goldUsd;
+          marketState.goldPhp = json["pax-gold"].php || marketState.goldUsd * PHP_PER_USD;
+          if (typeof json["pax-gold"].usd_24h_change === "number") {
+            marketState.goldChange24h = json["pax-gold"].usd_24h_change;
+          }
+        }
+
+        if (json["ainft"]) {
+          marketState.nftUsd = json["ainft"].usd || marketState.nftUsd;
+          marketState.nftPhp = json["ainft"].php || marketState.nftUsd * PHP_PER_USD;
+          if (typeof json["ainft"].usd_24h_change === "number") {
+            marketState.nftChange24h = json["ainft"].usd_24h_change;
+          }
+        }
+
+        const nowTime = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+        statusEl.textContent = `Live Prices Updated • ${nowTime}`;
+        document.getElementById("ticker-timestamp").textContent = `Live Oracle • ${nowTime}`;
+      } catch (err) {
+        const nowTime = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+        statusEl.textContent = `Reference Feed Active • ${nowTime}`;
+        document.getElementById("ticker-timestamp").textContent = `Reference Rate: ₱${PHP_PER_USD.toFixed(2)} / USD • Nov 19, 2026`;
+      } finally {
+        iconEl.classList.remove("animate-spin");
+        renderMarketPrices();
+        if (marketState.lastMatchType) {
+          renderScannedPriceBox(marketState.lastMatchType);
+        }
+      }
+    }
+
+    // Update ticker, live price cards, and comparison readouts
+    function renderMarketPrices() {
+      const goldUsdText = formatUsd(marketState.goldUsd);
+      const goldPhpText = formatPhp(marketState.goldPhp);
+      const nftUsdText = formatUsd(marketState.nftUsd);
+      const nftPhpText = formatPhp(marketState.nftPhp);
+      const floorUsdText = formatUsd(marketState.nftFloorUsd);
+      const floorPhpText = formatPhp(marketState.nftFloorPhp);
+
+      // Ticker bar
+      document.getElementById("ticker-gold-usd").textContent = goldUsdText;
+      document.getElementById("ticker-gold-php").textContent = goldPhpText;
+      document.getElementById("ticker-nft-usd").textContent = nftUsdText;
+      document.getElementById("ticker-nft-php").textContent = nftPhpText;
+
+      // Gold card
+      document.getElementById("gold-price-usd").textContent = goldUsdText;
+      document.getElementById("gold-price-php").textContent = goldPhpText;
+      const goldBadge = document.getElementById("gold-change-badge");
+      const gPrefix = marketState.goldChange24h >= 0 ? "+" : "";
+      goldBadge.textContent = `${gPrefix}${marketState.goldChange24h.toFixed(2)}% (24h)`;
+      goldBadge.className =
+        marketState.goldChange24h >= 0
+          ? "font-mono text-xs font-semibold px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+          : "font-mono text-xs font-semibold px-2.5 py-1 rounded-lg bg-rose-500/15 text-rose-400 border border-rose-500/30";
+
+      // NFT card
+      document.getElementById("nft-price-usd").textContent = nftUsdText;
+      document.getElementById("nft-price-php").textContent = nftPhpText;
+      document.getElementById("nft-floor-usd").textContent = floorUsdText;
+      document.getElementById("nft-floor-php").textContent = "≈ " + floorPhpText;
+      const nftBadge = document.getElementById("nft-change-badge");
+      const nPrefix = marketState.nftChange24h >= 0 ? "+" : "";
+      nftBadge.textContent = `${nPrefix}${marketState.nftChange24h.toFixed(2)}% (24h)`;
+      nftBadge.className =
+        marketState.nftChange24h >= 0
+          ? "font-mono text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-500/15 text-indigo-300 border border-indigo-500/30"
+          : "font-mono text-xs font-semibold px-2.5 py-1 rounded-lg bg-rose-500/15 text-rose-400 border border-rose-500/30";
+
+      // Comparison section
+      document.getElementById("comp-gold-price").textContent = `${goldUsdText} USD / ${goldPhpText} (1 troy oz)`;
+      document.getElementById("comp-nft-price").textContent = `${nftUsdText} USD (AINFT) • ~${floorUsdText} Sector Floor`;
+    }
+
+    // Load Teachable Machine image model and read class labels dynamically
+    async function loadTeachableMachineModel() {
+      if (modelInstance) return modelInstance;
+      const statusEl = document.getElementById("model-status");
+      statusEl.innerHTML = 'Model: <span class="text-amber-400 font-mono">Loading _okYdyBMt...</span>';
+
+      const modelURL = TM_MODEL_URL + "model.json";
+      const metadataURL = TM_MODEL_URL + "metadata.json";
+      modelInstance = await tmImage.load(modelURL, metadataURL);
+
+      const labels = typeof modelInstance.getClassLabels === "function" ? modelInstance.getClassLabels() : [];
+      statusEl.innerHTML = 'Model: <span class="text-emerald-400 font-mono">_okYdyBMt Loaded</span>';
+      if (labels.length > 0) {
+        document.getElementById("loaded-classes-count").textContent = `Classes: ${labels.join(", ")}`;
+      }
+      return modelInstance;
+    }
+
+    // Switch between Live Webcam and Upload Token Picture tabs
+    function switchScannerMode(mode) {
+      const tabWebcam = document.getElementById("tab-webcam");
+      const tabUpload = document.getElementById("tab-upload");
+      const webcamControls = document.getElementById("webcam-controls");
+      const uploadControls = document.getElementById("upload-controls");
+      const previewImg = document.getElementById("uploaded-preview");
+      const webcamContainer = document.getElementById("webcam-container");
+      const placeholder = document.getElementById("scanner-placeholder");
+
+      if (mode === "webcam") {
+        tabWebcam.className = "flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-white/10 text-white shadow cursor-pointer";
+        tabUpload.className = "flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold transition-all text-slate-400 hover:text-white cursor-pointer";
+        webcamControls.classList.remove("hidden");
+        uploadControls.classList.add("hidden");
+        previewImg.classList.add("hidden");
+        if (!webcamActive) {
+          webcamContainer.classList.add("hidden");
+          placeholder.classList.remove("hidden");
+        }
+      } else {
+        stopWebcamScanner();
+        tabUpload.className = "flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-white/10 text-white shadow cursor-pointer";
+        tabWebcam.className = "flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold transition-all text-slate-400 hover:text-white cursor-pointer";
+        uploadControls.classList.remove("hidden");
+        webcamControls.classList.add("hidden");
+        webcamContainer.classList.add("hidden");
+        if (previewImg.getAttribute("src")) {
+          previewImg.classList.remove("hidden");
+          placeholder.classList.add("hidden");
+        } else {
+          placeholder.classList.remove("hidden");
+        }
+      }
+    }
+
+    // Start webcam classification loop
+    async function startWebcamScanner() {
+      const startBtn = document.getElementById("start-cam-btn");
+      const stopBtn = document.getElementById("stop-cam-btn");
+      const placeholder = document.getElementById("scanner-placeholder");
+      const webcamContainer = document.getElementById("webcam-container");
+      const overlay = document.getElementById("scan-overlay");
+
+      try {
+        startBtn.disabled = true;
+        startBtn.textContent = "Starting Camera...";
+        await loadTeachableMachineModel();
+
+        webcamInstance = new tmImage.Webcam(380, 380, true);
+        await webcamInstance.setup();
+        await webcamInstance.play();
+        webcamActive = true;
+
+        webcamContainer.innerHTML = "";
+        webcamContainer.appendChild(webcamInstance.canvas);
+        placeholder.classList.add("hidden");
+        webcamContainer.classList.remove("hidden");
+        overlay.classList.remove("hidden");
+
+        startBtn.classList.add("hidden");
+        stopBtn.classList.remove("hidden");
+
+        runWebcamLoop();
+      } catch (err) {
+        startBtn.disabled = false;
+        startBtn.textContent = "Start AI Camera";
+        document.getElementById("model-status").innerHTML =
+          '<span class="text-rose-400">Webcam unavailable — use "Upload Token Picture" instead.</span>';
+      }
+    }
+
+    async function runWebcamLoop() {
+      if (!webcamActive || !webcamInstance) return;
+      webcamInstance.update();
+      await classifyElement(webcamInstance.canvas);
+      rafId = window.requestAnimationFrame(runWebcamLoop);
+    }
+
+    function stopWebcamScanner() {
+      webcamActive = false;
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+      if (webcamInstance) {
+        try { webcamInstance.stop(); } catch (e) {}
+        webcamInstance = null;
+      }
+      const startBtn = document.getElementById("start-cam-btn");
+      const stopBtn = document.getElementById("stop-cam-btn");
+      const overlay = document.getElementById("scan-overlay");
+      startBtn.disabled = false;
+      startBtn.textContent = "Start AI Camera";
+      startBtn.classList.remove("hidden");
+      stopBtn.classList.add("hidden");
+      overlay.classList.add("hidden");
+    }
+
+    // Drag-and-drop & file upload handlers
+    function handleDragOver(e) {
+      e.preventDefault();
+      document.getElementById("drop-zone").classList.add("border-amber-400");
+    }
+
+    function handleDragLeave(e) {
+      e.preventDefault();
+      document.getElementById("drop-zone").classList.remove("border-amber-400");
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      document.getElementById("drop-zone").classList.remove("border-amber-400");
+      const file = e.dataTransfer.files && e.dataTransfer.files[0];
+      if (file && file.type.startsWith("image/")) {
+        switchScannerMode("upload");
+        readUploadedTokenImage(file);
+      }
+    }
+
+    function handleImageUpload(e) {
+      const file = e.target.files && e.target.files[0];
+      if (file) readUploadedTokenImage(file);
+    }
+
+    function readUploadedTokenImage(file) {
+      const previewImg = document.getElementById("uploaded-preview");
+      const placeholder = document.getElementById("scanner-placeholder");
+      const overlay = document.getElementById("scan-overlay");
+
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        previewImg.src = event.target.result;
+        previewImg.classList.remove("hidden");
+        placeholder.classList.add("hidden");
+        overlay.classList.remove("hidden");
+
+        previewImg.onload = async function () {
+          await loadTeachableMachineModel();
+          await classifyElement(previewImg);
+          setTimeout(() => overlay.classList.add("hidden"), 1200);
+        };
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Run prediction and show real-time USD + PHP price for detected Gold or NFT Token
+    async function classifyElement(sourceEl) {
+      if (!modelInstance) return;
+      const predictions = await modelInstance.predict(sourceEl);
+      const ranked = [...predictions].sort((a, b) => b.probability - a.probability);
+      const top = ranked[0];
+
+      const barsEl = document.getElementById("prediction-bars");
+      barsEl.innerHTML = ranked
+        .map((pred) => {
+          const pct = (pred.probability * 100).toFixed(1);
+          const lower = pred.className.toLowerCase();
+          const isGold = lower.includes("gold");
+          const isNft = lower.includes("nft");
+          const fillClass = isGold
+            ? "bg-gradient-to-r from-amber-300 to-amber-500"
+            : isNft
+            ? "bg-gradient-to-r from-indigo-500 to-cyan-400"
+            : "bg-slate-400";
+          const textClass = isGold ? "text-amber-300" : isNft ? "text-indigo-300" : "text-slate-200";
+
+          return `
+            <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/5">
+              <div class="flex justify-between text-xs font-medium mb-1.5">
+                <span class="${textClass} font-semibold">${pred.className}</span>
+                <span class="font-mono text-slate-300">${pct}%</span>
+              </div>
+              <div class="w-full h-2 rounded-full bg-obsidian overflow-hidden">
+                <div class="h-full ${fillClass} rounded-full transition-all duration-200" style="width: ${pct}%"></div>
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+
+      if (top && top.probability >= 0.55) {
+        const label = top.className.toLowerCase();
+        if (label.includes("gold")) {
+          marketState.lastMatchType = "gold";
+          renderScannedPriceBox("gold", top.className, top.probability);
+        } else if (label.includes("nft")) {
+          marketState.lastMatchType = "nft";
+          renderScannedPriceBox("nft", top.className, top.probability);
+        } else {
+          marketState.lastMatchType = null;
+          renderScannedPriceBox("other", top.className, top.probability);
+        }
+      }
+    }
+
+    function renderScannedPriceBox(matchType, className = "", confidence = 1) {
+      const panel = document.getElementById("output-panel");
+      const badge = document.getElementById("detection-badge");
+      const icon = document.getElementById("detected-icon");
+      const title = document.getElementById("detected-title");
+      const subtitle = document.getElementById("detected-subtitle");
+      const priceBox = document.getElementById("detected-price-box");
+      const usdEl = document.getElementById("scanned-live-usd");
+      const phpEl = document.getElementById("scanned-live-php");
+      const changeEl = document.getElementById("scanned-live-change");
+      const benchEl = document.getElementById("scanned-asset-benchmark");
+      const summaryEl = document.getElementById("scanned-asset-summary");
+
+      const pctText = (confidence * 100).toFixed(1);
+
+      if (matchType === "gold") {
+        panel.classList.remove("glow-indigo");
+        panel.classList.add("glow-gold");
+        badge.textContent = `Gold Token • ${pctText}%`;
+        badge.className = "text-xs font-mono px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40";
+
+        icon.textContent = "Au";
+        icon.className = "w-12 h-12 rounded-xl bg-gradient-to-br from-amber-300 to-amber-600 flex items-center justify-center text-lg font-display font-bold text-obsidian shadow-lg shadow-amber-500/25";
+        title.textContent = className || "Gold Token";
+        subtitle.textContent = "PAX Gold (PAXG) • 24K Physical Bullion-Backed Token";
+
+        priceBox.classList.remove("hidden");
+        usdEl.textContent = formatUsd(marketState.goldUsd);
+        usdEl.className = "font-mono text-2xl sm:text-3xl font-bold text-amber-400 mt-0.5";
+        phpEl.textContent = formatPhp(marketState.goldPhp) + " (per 1 troy oz)";
+
+        const sign = marketState.goldChange24h >= 0 ? "+" : "";
+        changeEl.textContent = `${sign}${marketState.goldChange24h.toFixed(2)}% (24h)`;
+        changeEl.className = marketState.goldChange24h >= 0
+          ? "font-mono text-base font-bold text-emerald-400 mt-0.5"
+          : "font-mono text-base font-bold text-rose-400 mt-0.5";
+        benchEl.textContent = "1 PAXG = 1 Fine Troy Oz Gold";
+        summaryEl.textContent = "Backed 1:1 by physical London bullion reserves; provides fractional access and inflation hedging.";
+      } else if (matchType === "nft") {
+        panel.classList.remove("glow-gold");
+        panel.classList.add("glow-indigo");
+        badge.textContent = `NFT Token • ${pctText}%`;
+        badge.className = "text-xs font-mono px-2.5 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/40";
+
+        icon.textContent = "NFT";
+        icon.className = "w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center text-sm font-display font-bold text-white shadow-lg shadow-indigo-500/25";
+        title.textContent = className || "NFT Token";
+        subtitle.textContent = "AINFT (NFT) & Non-Fungible Digital Collectible Reference";
+
+        priceBox.classList.remove("hidden");
+        usdEl.textContent = formatUsd(marketState.nftUsd);
+        usdEl.className = "font-mono text-xl sm:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-cyan-300 mt-0.5";
+        phpEl.textContent = formatPhp(marketState.nftPhp) + " (AINFT Reference)";
+
+        const sign = marketState.nftChange24h >= 0 ? "+" : "";
+        changeEl.textContent = `${sign}${marketState.nftChange24h.toFixed(2)}% (24h)`;
+        changeEl.className = marketState.nftChange24h >= 0
+          ? "font-mono text-base font-bold text-indigo-300 mt-0.5"
+          : "font-mono text-base font-bold text-rose-400 mt-0.5";
+        benchEl.textContent = `Sector Floor: ${formatUsd(marketState.nftFloorUsd)}`;
+        summaryEl.textContent = "Unique on-chain digital asset supporting creator ownership, provenance, and community utility.";
+      } else {
+        panel.classList.remove("glow-gold", "glow-indigo");
+        badge.textContent = `Class • ${pctText}%`;
+        title.textContent = className;
+        subtitle.textContent = "Point the camera or upload a Gold Token or NFT Token picture to see its live price.";
+        priceBox.classList.add("hidden");
+      }
+    }
+
+    // Boot prices immediately and refresh every 60 seconds
+    window.addEventListener("DOMContentLoaded", () => {
+      renderMarketPrices();
+      fetchLiveMarketPrices();
+      setInterval(fetchLiveMarketPrices, 60000);
+    });
+  </script>
+</body>
+</html>
